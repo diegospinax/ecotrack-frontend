@@ -65,7 +65,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Lecciones',
+          title: 'Home',
           tabBarIcon: ({ color }) => <IconSymbol size={24} name="book.fill" color={color} />,
           tabBarLabelStyle: { 
             fontSize: isWeb && isTablet ? 14 : 12, 
@@ -77,7 +77,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="diary"
         options={{
-          title: 'Diario',
+          title: 'Tareas',
           tabBarIcon: ({ color }) => <IconSymbol size={24} name="square.and.pencil" color={color} />,
           tabBarLabelStyle: { 
             fontSize: isWeb && isTablet ? 14 : 12, 

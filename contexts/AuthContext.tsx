@@ -6,6 +6,8 @@ import { authService } from '../services/authService';
 import { AuthRequest } from '../model/auth/AuthRequest';
 import { Role } from '@/model/enumerated/Role';
 import { jwtDecode } from 'jwt-decode';
+import { personService } from '@/services/person/personService';
+import { Person } from '@/model/person/Person';
 
 // 1. Define la forma del contexto
 interface AuthContextType {
@@ -44,12 +46,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             await AsyncStorage.removeItem('auth_token');
             setUser(null);
           } else {
+            console.log(decodedToken);
+
+            const person: Person = await personService.findPersonById(decodedToken.personId);
+
             const userData = new User(
               decodedToken.id,
               decodedToken.email,
               decodedToken.role,
-              decodedToken.personId
+              person
             );
+
             setUser(userData);
           }
         }
@@ -69,20 +76,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const { token } = await authService.login(request);
 
-      console.log(token);
-
       const decodedToken: DecodedToken = jwtDecode(token);
+
+      await AsyncStorage.setItem('auth_token', token);
+
+      const person: Person = await personService.findPersonById(decodedToken.personId);
 
       const user = new User(
         decodedToken.id,
         decodedToken.email,
         decodedToken.role,
-        decodedToken.personId
+        person
       );
 
       console.log(user);
 
-      await AsyncStorage.setItem('auth_token', token);
       setUser(user);
 
       return true;

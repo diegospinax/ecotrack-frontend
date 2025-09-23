@@ -13,6 +13,7 @@ import React, { useState } from 'react';
 import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function LoginScreen() {
+  const text = useThemeColor({}, 'text');
   const router = useRouter();
   const { login } = useAuth();
   const { toast, showError, showSuccess, hideToast } = useToast();
@@ -45,7 +46,7 @@ export default function LoginScreen() {
       if (success) {
         showSuccess('¡Bienvenido de vuelta!');
         setTimeout(() => {
-          router.replace('/(tabs)');
+          router.replace('/(app)/(tabs)');
         }, 1000);
       } else {
         showError('Credenciales incorrectas. Verifica tu email y contraseña');
@@ -77,14 +78,14 @@ export default function LoginScreen() {
             autoCorrect={false}
             value={email}
             onChangeText={setEmail}
-            style={styles.input}
+            style={[styles.input, { color: text }]}
           />
           <Input
             placeholder="Contraseña"
             secureTextEntry
             value={password}
             onChangeText={setPassword}
-            style={styles.input}
+            style={[styles.input, { color: text }]}
           />
 
           <TouchableOpacity>
@@ -152,7 +153,7 @@ const styles = StyleSheet.create({
     }),
   },
   input: {
-    marginBottom: 4,
+    textAlignVertical: 'center',
   },
   forgotText: {
     fontSize: 14,
