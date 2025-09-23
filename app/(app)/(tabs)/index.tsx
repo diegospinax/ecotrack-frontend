@@ -3,9 +3,10 @@ import { ThemedView } from '@/components/ThemedView';
 import { WebContainer } from '@/components/WebContainer';
 import { useAuth } from '@/hooks/useAuth';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { capitalizeFirstLetter } from '@/utils/text-display';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Dimensions, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function LessonsScreen() {
   const router = useRouter();
@@ -16,7 +17,6 @@ export default function LessonsScreen() {
   const background = useThemeColor({}, 'background');
   const primary = useThemeColor({}, 'primary');
   const { width } = Dimensions.get('window');
-  const isWeb = Platform.OS === 'web';
   const isTablet = width >= 768;
 
   return (
@@ -31,7 +31,7 @@ export default function LessonsScreen() {
         </View>
 
         {/* Perfil de usuario */}
-        <TouchableOpacity 
+        <TouchableOpacity
           style={[styles.profileCard, { backgroundColor: cardBg, borderColor: border }]}
           onPress={() => router.push('/progress')}
           activeOpacity={0.7}
@@ -39,13 +39,13 @@ export default function LessonsScreen() {
           accessibilityHint="Toca para ver tu progreso detallado y estadísticas"
         >
           <View style={styles.profileInfo}>
-            <View style={styles.avatar}>
-              <Text style={styles.avatarText}>👩🏻</Text>
-            </View>
+            <Image
+              source={{ uri: user?.person.profilePicture }}
+              style={styles.avatar}
+            />
             <View style={styles.userInfo}>
-              <ThemedText style={styles.userName}>{user?.name || 'Usuario'}</ThemedText>
-              <ThemedText style={styles.userLevel}>Nivel {user?.level || 1}</ThemedText>
-              <ThemedText style={styles.userXP}>{user?.xp?.toLocaleString() || '0'} XP</ThemedText>
+              <ThemedText style={styles.userName}>{capitalizeFirstLetter(user?.person.name!)}</ThemedText>
+              <ThemedText style={styles.userLevel}>Area: {capitalizeFirstLetter(user?.person.area!)}</ThemedText>
             </View>
           </View>
         </TouchableOpacity>
@@ -53,9 +53,9 @@ export default function LessonsScreen() {
         {/* Resumen */}
         <View style={styles.section}>
           <ThemedText style={styles.sectionTitle}>Resumen</ThemedText>
-          
+
           {/* Lecciones */}
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.summaryCard, { backgroundColor: cardBg, borderColor: border }]}
             onPress={() => router.push('/lessons')}
           >
@@ -90,14 +90,14 @@ export default function LessonsScreen() {
         <View style={styles.section}>
           <ThemedText style={styles.sectionTitle}>Acciones</ThemedText>
           <View style={styles.actionsRow}>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={[styles.actionButton, { backgroundColor: primary }]}
               onPress={() => router.push('/add-activity')}
               activeOpacity={0.8}
             >
               <Text style={styles.actionButtonText}>Añadir Actividad</Text>
             </TouchableOpacity>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={[styles.actionButton, { backgroundColor: cardBg, borderColor: border, borderWidth: 1 }]}
               onPress={() => router.push('/lesson-topics')}
               activeOpacity={0.8}
@@ -111,7 +111,7 @@ export default function LessonsScreen() {
         <View style={styles.section}>
           <ThemedText style={styles.sectionTitle}>Empresa</ThemedText>
           <View style={styles.socialContainer}>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={[styles.socialButton, { backgroundColor: cardBg, borderColor: border }]}
               onPress={() => router.push('/join-area')}
               activeOpacity={0.7}
@@ -119,8 +119,8 @@ export default function LessonsScreen() {
               <Text style={styles.socialIcon}>🏢</Text>
               <ThemedText style={styles.socialText}>Unirse a Área</ThemedText>
             </TouchableOpacity>
-            
-            <TouchableOpacity 
+
+            <TouchableOpacity
               style={[styles.socialButton, { backgroundColor: cardBg, borderColor: border }]}
               onPress={() => router.push('/register-company')}
               activeOpacity={0.7}
@@ -128,8 +128,8 @@ export default function LessonsScreen() {
               <Text style={styles.socialIcon}>🏭</Text>
               <ThemedText style={styles.socialText}>Registrar Empresa</ThemedText>
             </TouchableOpacity>
-            
-            <TouchableOpacity 
+
+            <TouchableOpacity
               style={[styles.socialButton, { backgroundColor: cardBg, borderColor: border, width: '100%' }]}
               activeOpacity={0.7}
               onPress={() => router.push('/corporate-dashboard')}
@@ -145,7 +145,7 @@ export default function LessonsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { 
+  container: {
     flex: 1,
   },
   scrollContainer: {

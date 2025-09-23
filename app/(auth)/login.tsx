@@ -45,7 +45,7 @@ export default function LoginScreen() {
       if (success) {
         showSuccess('¡Bienvenido de vuelta!');
         setTimeout(() => {
-          router.replace('/(tabs)');
+          router.replace('/(app)/(tabs)');
         }, 1000);
       } else {
         showError('Credenciales incorrectas. Verifica tu email y contraseña');
