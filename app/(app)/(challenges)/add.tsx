@@ -64,7 +64,7 @@ export default function AddActivityScreen() {
       [
         { 
           text: 'Ver mi progreso', 
-          onPress: () => router.push('/(tabs)/profile'),
+          onPress: () => router.push('/(app)/(tabs)/profile'),
           style: 'default'
         },
         { 

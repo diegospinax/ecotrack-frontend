@@ -5,16 +5,43 @@ import WebContainer from '@/components/WebContainer';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { Task } from '@/model/challenge/task/Task';
 import { EcoCategoryEnum } from '@/model/enumerated/EcoCategoryEnum';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import React, { useState } from 'react';
 import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { styles } from '@/styles/tasks.styles';
 import { useAuth } from '@/hooks/useAuth';
+import { taskService } from '@/services/challenge/taskService';
+import { Challenge } from '@/model/challenge/Challenge';
+import { challengeService } from '@/services/challenge/challengeService';
+import { translateEcoCategory } from '@/utils/text-display';
 
 export default function ActivitiesScreen() {
+
   const { user } = useAuth();
   const router = useRouter();
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [challenges, setChallenges] = useState<Challenge[]>([]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (user?.role === 'ADMIN') {
+        findTasks();
+      } else if (user?.role === 'USER') {
+        findChallenges();
+      }
+    }, [user])
+  );
+
+  const findTasks = async () => {
+    const tasks: Task[] = await taskService.findAll();
+    setTasks(tasks);
+  }
+
+  const findChallenges = async () => {
+    const challenges: Challenge[] = await challengeService.findByPersonId(user!.person.id);
+    setChallenges(challenges);
+  }
+
   const [searchText, setSearchText] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<EcoCategoryEnum>();
 
@@ -31,6 +58,13 @@ export default function ActivitiesScreen() {
     return matchesSearch && matchesCategory;
   });
 
+  const filteredChallenges = challenges.filter((challenge) => {
+    const matchesSearch = challenge.task.title.toLowerCase().includes(searchText.toLowerCase()) ||
+      challenge.task.description.toLowerCase().includes(searchText.toLowerCase());
+    const matchesCategory = !selectedCategory || challenge.task.type === selectedCategory;
+    return matchesSearch && matchesCategory;
+  })
+
   return (
     <ThemedView style={styles.container}>
       <View style={styles.header}>
@@ -38,7 +72,7 @@ export default function ActivitiesScreen() {
           <Text style={[styles.backIcon, { color: text }]}>←</Text>
         </TouchableOpacity>
         <Text style={[styles.title, { color: text }]}>Gestión de Actividades</Text>
-        <TouchableOpacity onPress={() => router.push('/activity-form')}>
+        <TouchableOpacity onPress={() => router.push('/(app)/(challenges)/form')}>
           <Text style={styles.addIcon}>+</Text>
         </TouchableOpacity>
       </View>
@@ -96,7 +130,7 @@ export default function ActivitiesScreen() {
                     { color: text },
                     selectedCategory === category && { color: 'white' }
                   ]}>
-                    {category}
+                    {translateEcoCategory(category)}
                   </Text>
                 </TouchableOpacity>
               ))}
@@ -107,11 +141,17 @@ export default function ActivitiesScreen() {
         {/* Lista de actividades */}
         <View style={styles.section}>
           <ThemedText style={styles.sectionTitle}>
-            Actividades ({filteredTasks.length})
+            Actividades {user?.role === 'ADMIN' ? filteredTasks.length : filteredChallenges.length}
           </ThemedText>
 
-          {filteredTasks.map((task) => (
-            <TaskCard task={task} key={task.id} />
+          {user?.role === 'ADMIN' && filteredTasks.map((task) => (
+            <TaskCard task={task} key={task.id} onDeleteTask={() => {
+              setTasks(current => current.filter(t => t.id !== task.id))
+            }} />
+          ))}
+
+          {user?.role === 'USER' && filteredChallenges.map((challenge) => (
+            <TaskCard challenge={challenge} key={challenge.id} task={challenge.task} />
           ))}
 
         </View>

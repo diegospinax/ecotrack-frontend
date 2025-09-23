@@ -75,14 +75,13 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="diary"
+        name="challenges"
         options={{
           title: 'Tareas',
           tabBarIcon: ({ color }) => <IconSymbol size={24} name="square.and.pencil" color={color} />,
           tabBarLabelStyle: { 
-            fontSize: isWeb && isTablet ? 14 : 12, 
-            fontWeight: '500',
-            ...(isWeb && { cursor: 'pointer' })
+            fontSize: isTablet ? 14 : 12, 
+            fontWeight: '500'
           },
         }}
       />

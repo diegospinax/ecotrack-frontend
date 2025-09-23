@@ -11,13 +11,16 @@ import CardActions from '@/components/shared/CardActions/CardActions';
 import { useAuth } from '@/hooks/useAuth';
 import { Role } from '@/model/enumerated/Role';
 import { Challenge } from '@/model/challenge/Challenge';
+import { taskService } from '@/services/challenge/taskService';
+import { beautifyText, translateEcoCategory } from '@/utils/text-display';
 
 interface Props {
     task: Task;
-    challenge?: Challenge
+    challenge?: Challenge,
+    onDeleteTask?: () => void;
 }
 
-export default function TaskCard({ task, challenge }: Props) {
+export default function TaskCard({ task, challenge, onDeleteTask }: Props) {
     const router = useRouter();
     const { user } = useAuth();
 
@@ -34,7 +37,8 @@ export default function TaskCard({ task, challenge }: Props) {
                     text: 'Eliminar',
                     style: 'destructive',
                     onPress: () => {
-                        //Incluir eliminado DELETE a API
+                        taskService.deleteTask(task.id);
+                        onDeleteTask!();
                         Alert.alert('Actividad eliminada', `"${task.title}" ha sido eliminada`);
                     }
                 }
@@ -43,8 +47,11 @@ export default function TaskCard({ task, challenge }: Props) {
     };
 
     const handleEdit = () => {
-        //Renombrar a task-form
-        router.push(`/activity-form?id=${task.id}`)
+        router.push(`/form?task=${JSON.stringify(task)}`);
+    }
+
+    const handleUpdateChallenge = () => {
+        //TODO 
     }
 
     return (
@@ -57,8 +64,12 @@ export default function TaskCard({ task, challenge }: Props) {
                     <Text style={styles.taskIconText}>{getTypeIcon(task.type)}</Text>
                 </View>
                 <View style={styles.activityInfo}>
-                    <ThemedText style={styles.activityTitle}>{task.title}</ThemedText>
-                    <ThemedText style={styles.activityCategory}>{task.type}</ThemedText>
+                    <ThemedText style={styles.activityTitle}>
+                        {beautifyText(task.title)}
+                    </ThemedText>
+                    <ThemedText style={styles.activityCategory}>
+                        {translateEcoCategory(task.type)}
+                    </ThemedText>
                     <View style={styles.activityMeta}>
                         <Text style={[
                             styles.difficultyBadge,
@@ -80,10 +91,10 @@ export default function TaskCard({ task, challenge }: Props) {
             </View>
 
             <ThemedText style={styles.activityDescription}>
-                {task.description}
+                {beautifyText(task.description)}
             </ThemedText>
 
-            { user?.role === Role.ADMIN && (
+            {user?.role === Role.ADMIN && (
                 <CardActions onEdit={handleEdit} onDelete={handleDelete} />
             )}
 
