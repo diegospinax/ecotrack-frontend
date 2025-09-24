@@ -1,14 +1,14 @@
 import { useTheme } from '@/contexts/ThemeContext';
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 export default function SplashScreen() {
   const router = useRouter();
   const { isDark } = useTheme();
 
   useEffect(() => {
-    const timer = setTimeout(() => router.replace('/login'), 2000);
+    const timer = setTimeout(() => router.replace('/(app)/(tabs)'), 2000);
     return () => clearTimeout(timer);
   }, [router]);
 
@@ -22,14 +22,8 @@ export default function SplashScreen() {
         <View style={[styles.circle, { backgroundColor: circleColor }]}>
           <View style={[styles.innerCircle, { backgroundColor: innerCircleColor }]} />
         </View>
-        <Text style={styles.logoText}>ecoTrack</Text>
+        <Text style={styles.logoText}>EcoTrack</Text>
       </View>
-      <TouchableOpacity 
-        style={[styles.bottom, { backgroundColor: circleColor }]}
-        onPress={() => router.replace('/login')}
-      >
-        <Text style={styles.startText}>INICIAR</Text>
-      </TouchableOpacity>
     </View>
   );
 }

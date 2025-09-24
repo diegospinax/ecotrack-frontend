@@ -1,4 +1,5 @@
-import { Role } from "@/domain/user/Role";
+import { Role } from "../enumerated/Role";
+
 
 export class UserRequest { 
     constructor(

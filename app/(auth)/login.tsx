@@ -61,7 +61,7 @@ export default function LoginScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <WebContainer maxWidth={500} centered>
+      <WebContainer maxWidth={500} centered style={{paddingVertical: 40}}>
         <View style={styles.header}>
           <View style={[styles.iconContainer, { backgroundColor: useThemeColor({}, 'card') }]}>
             <Text style={styles.icon}>🌍</Text>
@@ -86,6 +86,7 @@ export default function LoginScreen() {
             value={password}
             onChangeText={setPassword}
             style={[styles.input, { color: text }]}
+            autoCapitalize='none'
           />
 
           <TouchableOpacity>

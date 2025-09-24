@@ -25,7 +25,7 @@ export default function LessonsScreen() {
         {/* Header con perfil de usuario */}
         <View style={styles.header}>
           <Text style={[styles.logoText, { color: textColor }]}>EcoTrack</Text>
-          <TouchableOpacity onPress={() => router.push('/settings')} style={styles.settingsButton}>
+          <TouchableOpacity onPress={() => router.push('/(app)/(settings)')} style={styles.settingsButton}>
             <Text style={styles.settingsIcon}>⚙️</Text>
           </TouchableOpacity>
         </View>
@@ -63,27 +63,49 @@ export default function LessonsScreen() {
               <View style={styles.summaryText}>
                 <ThemedText style={styles.summaryLabel}>Lecciones</ThemedText>
                 <ThemedText style={styles.summaryTitle}>2 lecciones pendientes</ThemedText>
-                <ThemedText style={styles.summaryDesc}>Completa las lecciones para ganar XP</ThemedText>
+                <ThemedText style={styles.summaryDesc}>Completa las lecciones para aprender a cuidar el planeta!</ThemedText>
               </View>
               <View style={[styles.summaryIcon, { backgroundColor: background }]}>
-                <Text style={styles.iconText}>🌲</Text>
+                <Text style={styles.iconText}>📚</Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+
+          {/* Tareas */}
+          <TouchableOpacity
+            style={[styles.summaryCard, { backgroundColor: cardBg, borderColor: border }]}
+            onPress={() => router.push('/challenges')}
+          >
+            <View style={styles.summaryContent}>
+              <View style={styles.summaryText}>
+                <ThemedText style={styles.summaryLabel}>Tareas</ThemedText>
+                <ThemedText style={styles.summaryTitle}>3 tareas pendientes</ThemedText>
+                <ThemedText style={styles.summaryDesc}>Realiza acciones que mejoren tu huella de cabono!</ThemedText>
+              </View>
+              <View style={[styles.summaryIcon, { backgroundColor: background }]}>
+                <Text style={styles.iconText}>🌿</Text>
               </View>
             </View>
           </TouchableOpacity>
 
           {/* Recompensas */}
-          <View style={[styles.summaryCard, { backgroundColor: cardBg, borderColor: border }]}>
+          <TouchableOpacity
+            style={[styles.summaryCard, { backgroundColor: cardBg, borderColor: border }]}
+            onPress={() => router.push('/profile')}
+          >
             <View style={styles.summaryContent}>
               <View style={styles.summaryText}>
-                <ThemedText style={styles.summaryLabel}>Recompensas</ThemedText>
+                <ThemedText style={styles.summaryLabel}>Logros</ThemedText>
                 <ThemedText style={styles.summaryTitle}>3 recompensas ganadas</ThemedText>
-                <ThemedText style={styles.summaryDesc}>Usa tus recompensas en la tienda</ThemedText>
+                <ThemedText style={styles.summaryDesc}>Mira los logros obtenidos en el perfil</ThemedText>
               </View>
               <View style={[styles.summaryIcon, { backgroundColor: background }]}>
-                <Text style={styles.iconText}>🎁</Text>
+                <Text style={styles.iconText}>🏆</Text>
               </View>
             </View>
-          </View>
+          </TouchableOpacity>
+
+
         </View>
 
         {/* Acciones rápidas */}
@@ -92,50 +114,17 @@ export default function LessonsScreen() {
           <View style={styles.actionsRow}>
             <TouchableOpacity
               style={[styles.actionButton, { backgroundColor: primary }]}
-              onPress={() => router.push('/add-activity')}
+              onPress={() => router.push('/(app)/(challenges)/form')}
               activeOpacity={0.8}
             >
-              <Text style={styles.actionButtonText}>Añadir Actividad</Text>
+              <Text style={styles.actionButtonText}>Registrar tarea</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.actionButton, { backgroundColor: cardBg, borderColor: border, borderWidth: 1 }]}
               onPress={() => router.push('/lesson-topics')}
               activeOpacity={0.8}
             >
-              <Text style={[styles.actionButtonText, { color: textColor }]}>Ver Temas</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Funciones empresariales */}
-        <View style={styles.section}>
-          <ThemedText style={styles.sectionTitle}>Empresa</ThemedText>
-          <View style={styles.socialContainer}>
-            <TouchableOpacity
-              style={[styles.socialButton, { backgroundColor: cardBg, borderColor: border }]}
-              onPress={() => router.push('/join-area')}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.socialIcon}>🏢</Text>
-              <ThemedText style={styles.socialText}>Unirse a Área</ThemedText>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.socialButton, { backgroundColor: cardBg, borderColor: border }]}
-              onPress={() => router.push('/register-company')}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.socialIcon}>🏭</Text>
-              <ThemedText style={styles.socialText}>Registrar Empresa</ThemedText>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.socialButton, { backgroundColor: cardBg, borderColor: border, width: '100%' }]}
-              activeOpacity={0.7}
-              onPress={() => router.push('/corporate-dashboard')}
-            >
-              <Text style={styles.socialIcon}>📊</Text>
-              <ThemedText style={styles.socialText}>Dashboard Corporativo</ThemedText>
+              <Text style={[styles.actionButtonText, { color: textColor }]}>Registrar lección</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -158,11 +147,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 20,
     paddingBottom: 24,
-    ...(Platform.OS === 'web' && {
-      maxWidth: 800,
-      alignSelf: 'center',
-      width: '100%',
-    }),
   },
   logoText: {
     fontSize: 28,
@@ -190,12 +174,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 8,
     elevation: 2,
-    ...(Platform.OS === 'web' && {
-      cursor: 'pointer' as any,
-      transition: 'all 0.2s ease',
-      maxWidth: 400,
-      alignSelf: 'center',
-    }),
   },
   profileInfo: {
     flexDirection: 'row',

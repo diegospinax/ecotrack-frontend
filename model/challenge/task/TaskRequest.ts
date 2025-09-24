@@ -6,6 +6,6 @@ export class TaskRequest {
         public readonly description: string,
         public readonly type: EcoCategoryEnum,
         public readonly requiredRepetitions: number,
-        public readonly isActive: boolean
+        public readonly isActive?: boolean
     ) {}
 }
