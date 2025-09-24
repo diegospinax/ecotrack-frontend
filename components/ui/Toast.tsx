@@ -69,7 +69,7 @@ export default function Toast({
       case 'success':
         return { backgroundColor: '#10b981', icon: '✅' };
       case 'error':
-        return { backgroundColor: '#ef4444', icon: '❌' };
+        return { backgroundColor: '#ef4444', icon: '⛔' };
       case 'warning':
         return { backgroundColor: '#f59e0b', icon: '⚠️' };
       default:
@@ -106,16 +106,13 @@ const styles = StyleSheet.create({
     left: 20,
     right: 20,
     zIndex: 1000,
-    ...(Platform.OS === 'web' && {
-      position: 'fixed',
-    }),
   },
   toast: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderRadius: 12,
+    borderRadius: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,

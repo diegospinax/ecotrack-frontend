@@ -40,7 +40,7 @@ export default function EmployeeFormScreen() {
   const [userId, setUserId] = useState<number>();
   const [personId, setPersonId] = useState<number>();
 
-  const isEditing = !!params.task;
+  const isEditing = !!params.user;
 
   const cardBg = useThemeColor({}, 'card');
   const border = useThemeColor({}, 'border');
@@ -61,8 +61,13 @@ export default function EmployeeFormScreen() {
     }
   }, [params.user]);
 
+  useEffect(() => {
+    if (!isEditing && name)
+      setPassword(name.split(" ")[0].toLowerCase().concat('123'))
+  }, [name, isEditing]);
+
   const handleSubmit = async () => {
-    if (!email || !password || !role || !name || !lastname || !area || !profilePicture || !userId || !personId) {
+    if (!email || !role || !name || !lastname || !area || !profilePicture) {
       Alert.alert('Error', 'Por favor completa todos los campos obligatorios');
       return;
     }
@@ -76,19 +81,22 @@ export default function EmployeeFormScreen() {
 
     const userRequest: UserRequest = {
       email,
-      password,
-      role
+      role,
+      ...((isEditing && password || !isEditing) && {password})
     }
 
     if (isEditing) {
-      await personService.udpatePerson(personId!, personRequest);
-      await userService.updateUser(userId, userRequest);
+      await personService.updatePerson(personId!, personRequest);
+      await userService.updateUser(userId!, userRequest);
 
     } else {
       const registerRequest: PersonRegister = {
         user: userRequest,
         person: personRequest
       }
+
+      console.log(registerRequest);
+
 
       await personService.createPerson(registerRequest);
     }
@@ -172,10 +180,23 @@ export default function EmployeeFormScreen() {
             />
           </View>
 
+          {isEditing && (<View style={styles.inputGroup}>
+            <ThemedText style={styles.inputLabel}>Contraseña *</ThemedText>
+            <Input
+              placeholder="13w*$h3Re"
+              value={undefined}
+              onChangeText={setPassword}
+              secureTextEntry={true}
+              autoCapitalize="none"
+              style={[styles.input, { color: text }]}
+            />
+          </View>)}
+
           <View style={[styles.inputGroup,]}>
             <ThemedText style={[styles.inputLabel]}>Role *</ThemedText>
             <View style={{
-              flexDirection: 'row'
+              flexDirection: 'row',
+              gap: 10,
             }}>
               <TouchableOpacity
                 style={[

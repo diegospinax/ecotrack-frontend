@@ -1,10 +1,10 @@
 import { useThemeColor } from '@/hooks/useThemeColor'
 import { User } from '@/model/user/User'
 import { personService } from '@/services/person/personService'
-import { beautifyText } from '@/utils/text-display'
+import { beautifyText, translateUserRole } from '@/utils/text-display'
 import { useRouter } from 'expo-router'
 import React from 'react'
-import { Alert, Image, Text, View } from 'react-native'
+import { Alert, Image, Text, TouchableOpacity, View } from 'react-native'
 import CardActions from '../shared/CardActions/CardActions'
 import { ThemedText } from '../ThemedText'
 import { styles } from './UserCard.styles'
@@ -12,10 +12,9 @@ import { useAuth } from '@/hooks/useAuth'
 
 interface Props {
     u: User
-    onDeletePerson: () => void
 }
 
-export default function UserCard({ u, onDeletePerson }: Props) {
+export default function UserCard({ u }: Props) {
     const { user } = useAuth();
     const router = useRouter();
 
@@ -33,8 +32,7 @@ export default function UserCard({ u, onDeletePerson }: Props) {
                     style: 'destructive',
                     onPress: () => {
                         personService.deletePerson(u.person.id)
-                        onDeletePerson!();
-                        Alert.alert('Empleado eliminado', `${beautifyText(u.person.name + "_" + u.person.lastname)} pasó a mejor lista...`);
+                        Alert.alert('Empleado eliminado', `${beautifyText(u.person.name + "_" + u.person.lastname)} ha sido desactivado...`);
                     }
                 }
             ]
@@ -59,7 +57,13 @@ export default function UserCard({ u, onDeletePerson }: Props) {
 
                 <View style={styles.employeeInfo}>
                     <ThemedText style={styles.employeeName}>{beautifyText(u.person.name.concat("_").concat(u.person.lastname))}</ThemedText>
-                    <ThemedText style={styles.employeePosition}>{beautifyText(u.person.area)}</ThemedText>
+                    <View style={{
+                        flexDirection: 'row',
+                        gap: 10
+                    }}>
+                        <ThemedText style={[styles.employeePosition, {textAlignVertical: 'center'}]}>{beautifyText(u.person.area)}</ThemedText>
+                        <ThemedText style={{ fontSize: 12, opacity: 0.7, textAlignVertical: 'center' }}>{translateUserRole(u.role)}</ThemedText>
+                    </View>
                 </View>
                 <View style={styles.employeeStats}>
                     <View style={[
@@ -74,17 +78,28 @@ export default function UserCard({ u, onDeletePerson }: Props) {
             </View>
 
             <View style={styles.employeeDetails}>
-                <ThemedText style={styles.employeeEmail}>{u.email}</ThemedText>
+                <ThemedText style={styles.employeeEmail}>Correo: {u.email}</ThemedText>
             </View>
 
             {user!.person.id !== u.person.id && <CardActions onDelete={handleDelete} onEdit={handleEdit} />}
+            {!u?.person.isActive && (
+                <TouchableOpacity
+                    style={[styles.button, { backgroundColor: '#FFC107', marginTop: 10 }]}
+                    onPress={async () => {
+                        await personService.activatePerson(u.person.id)
+                        router.navigate('/(app)/(settings)/employees')
+                    }}
+                >
+                    <Text style={styles.buttonText}>Activar</Text>
+                </TouchableOpacity>
+            )}
 
             {user!.person.id === u.person.id && (
                 <View>
                     <ThemedText style={{
                         textAlign: 'center',
                         opacity: 0.60
-                    }}>Administrador</ThemedText>
+                    }}>Administrador </ThemedText>
                 </View>
             )}
 

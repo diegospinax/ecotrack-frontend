@@ -2,6 +2,7 @@ import { Person } from "@/model/person/Person";
 import { PersonRegister } from "@/model/person/PersonRegister";
 import { PersonRequest } from "@/model/person/PersonRequest";
 import apiClient from "../apiClient";
+import { isAxiosError } from "axios";
 
 
 const createPerson = async (person: PersonRegister) => {
@@ -18,8 +19,12 @@ const findAll = async (): Promise<Person[]> => {
     return response.data;
 }
 
-const udpatePerson = async (personId: number, request: PersonRequest): Promise<void> => {
+const updatePerson = async (personId: number, request: PersonRequest): Promise<void> => {
     await apiClient.put(`/persons/${personId}`, request);
+}
+
+const activatePerson = async (personId: number): Promise<void> => {
+    await apiClient.put(`/persons/${personId}`, {isActive: true});
 }
 
 const deletePerson = async (personId: number) => {
@@ -30,6 +35,7 @@ export const personService = {
     findPersonById,
     findAll,
     createPerson,
-    udpatePerson,
+    updatePerson,
+    activatePerson,
     deletePerson
 };

@@ -10,7 +10,7 @@ import { Alert, Dimensions, Platform, StyleSheet, Switch, Text, TouchableOpacity
 
 export default function SettingsScreen() {
   const router = useRouter();
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const { toggleTheme, isDark } = useTheme();
   const cardBg = useThemeColor({}, 'card');
   const border = useThemeColor({}, 'border');
@@ -58,7 +58,7 @@ export default function SettingsScreen() {
         <View style={{ width: 24 }} />
       </View>
 
-      <WebContainer scrollable maxWidth={isTablet ? 800 : 600} style={{paddingVertical: 10}}>
+      <WebContainer scrollable maxWidth={isTablet ? 800 : 600} style={{paddingVertical: 10, paddingBottom: 100}}>
 
         {/* Modo Oscuro */}
         <View style={styles.section}>
@@ -80,8 +80,8 @@ export default function SettingsScreen() {
           </View>
         </View>
 
-        {/* Gestión Empresarial */}
-        <View style={styles.section}>
+        
+        { user?.role === 'ADMIN' &&( <View style={styles.section}>
           <ThemedText style={styles.sectionTitle}>Gestión Empresarial</ThemedText>
           <ThemedText style={styles.sectionDescription}>
             Administra todos los aspectos de tu empresa y sus objetivos de impacto ambiental.
@@ -114,26 +114,26 @@ export default function SettingsScreen() {
 
             <TouchableOpacity
               style={[styles.crudCard, { backgroundColor: cardBg, borderColor: border }]}
-              onPress={() => router.push('/goals')}
+              onPress={() => router.push('/(app)/(settings)/badges')}
             >
               <Text style={styles.crudIcon}>🏆</Text>
               <ThemedText style={styles.crudTitle}>Logros</ThemedText>
             </TouchableOpacity>
           </View>
-        </View>
-
-        {/* Cerrar Sesión */}
-        <View style={styles.section}>
-          <TouchableOpacity
-            style={[styles.logoutCard, { backgroundColor: cardBg, borderColor: border,  }]}
-            onPress={handleLogout}
-            activeOpacity={0.7}
-          >
-            <ThemedText style={[styles.logoutText, { color: '#dc2626' }]}>Cerrar Sesión</ThemedText>
-            <Text style={[styles.logoutIcon, { color: '#dc2626' }]}>→</Text>
-          </TouchableOpacity>
-        </View>
+        </View>)}
       </WebContainer>
+
+      {/* Cerrar Sesión */}
+      <View style={styles.logoutContainer}>
+        <TouchableOpacity
+          style={[styles.logoutCard, { backgroundColor: cardBg, borderColor: border,  }]}
+          onPress={handleLogout}
+          activeOpacity={0.7}
+        >
+          <ThemedText style={[styles.logoutText, { color: '#dc2626' }]}>Cerrar Sesión</ThemedText>
+          <Text style={[styles.logoutIcon, { color: '#dc2626' }]}>→</Text>
+        </TouchableOpacity>
+      </View>
     </ThemedView>
   );
 }
@@ -240,4 +240,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
   },
+  logoutContainer: {
+    position: 'absolute',
+    bottom: 70,
+    left: 20,
+    right: 20,
+  }
 });

@@ -12,18 +12,6 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-interface Employee {
-  id: number;
-  name: string;
-  email: string;
-  position: string;
-  area: string;
-  xp: number;
-  avatar: string;
-  joinDate: string;
-  isActive: boolean;
-}
-
 export default function EmployeesScreen() {
 
   const { user } = useAuth();
@@ -34,7 +22,7 @@ export default function EmployeesScreen() {
   useFocusEffect(
     React.useCallback(() => {
       findUsers();
-    }, [user])
+    }, [users])
   );
 
   const findUsers = async () => {
@@ -139,7 +127,7 @@ export default function EmployeesScreen() {
           </ThemedText>
 
           {filteredEmployees.map((user) => (
-            <UserCard u={user} key={user.id} onDeletePerson={() => setUsers(current => current.filter(u => u.id !== user.id))} />
+            <UserCard u={user} key={user.id} />
           ))}
 
           {filteredEmployees.length === 0 && (

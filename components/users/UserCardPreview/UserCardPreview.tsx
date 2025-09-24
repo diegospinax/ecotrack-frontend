@@ -3,7 +3,7 @@ import React from 'react'
 import { ThemedText } from '@/components/ThemedText'
 import { styles } from './UserCardPreview.styles'
 import { User } from '@/model/user/User'
-import { beautifyText } from '@/utils/text-display'
+import { beautifyText, translateUserRole } from '@/utils/text-display'
 import { useThemeColor } from '@/hooks/useThemeColor'
 import { Person } from '@/model/person/Person'
 
@@ -30,13 +30,21 @@ export default function UserCardPreview({ user, person }: Props) {
                             ? beautifyText(person.name + "_" + (person.lastname ?? ''))
                             : 'Nombre del empleado'}
                     </ThemedText>
-                    <ThemedText style={styles.previewArea}>
-                        {person.area ? beautifyText(person.area) : 'Área'}
-                    </ThemedText>
+                    <View style={{
+                        flexDirection: 'row',
+                        gap: 10
+                    }}>
+                        <ThemedText style={styles.previewArea}>
+                            {person.area ? beautifyText(person.area) : 'Área'}
+                        </ThemedText>
+                        <ThemedText style={styles.previewArea}>
+                            Rol: {user.role ? translateUserRole(user.role) : 'Rol del usuario'}
+                        </ThemedText>
+                    </View>
                 </View>
             </View>
             <ThemedText style={styles.previewEmail}>
-                {user.email ? user.email.toLowerCase() : 'email@empresa.com'}
+                Correo: {user.email ? user.email.toLowerCase() : 'email@empresa.com'}
             </ThemedText>
         </View>
     )

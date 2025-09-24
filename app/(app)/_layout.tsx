@@ -22,8 +22,7 @@ export default function AppLayout() {
       <Stack.Screen name="(settings)" options={{ headerShown: false }} />
       <Stack.Screen name="(courses)" options={{ headerShown: false }} />
       <Stack.Screen name="(users)" options={{ headerShown: false }} />
-      {/* Aquí declararemos otras pantallas que vivan dentro de (app) pero fuera de (tabs) */}
-      {/* Por ejemplo, una pantalla de perfil de usuario o ajustes */}
+      <Stack.Screen name="(achievements)" options={{ headerShown: false }} />
     </Stack>
   );
 }

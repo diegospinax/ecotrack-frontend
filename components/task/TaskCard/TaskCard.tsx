@@ -1,18 +1,18 @@
-import { View, Text, TouchableOpacity, Alert } from 'react-native'
-import React from 'react'
-import { Task } from '@/model/challenge/task/Task'
-import { ThemedText } from '../../ThemedText';
-import { styles } from './TaskCard.styles';
-import { getTypeIcon } from '@/utils/icons';
-import { getDifficultyColor, getDifficultyText } from '@/utils/difficult';
-import { useThemeColor } from '@/hooks/useThemeColor';
-import { useRouter } from 'expo-router';
 import CardActions from '@/components/shared/CardActions/CardActions';
 import { useAuth } from '@/hooks/useAuth';
-import { Role } from '@/model/enumerated/Role';
+import { useThemeColor } from '@/hooks/useThemeColor';
 import { Challenge } from '@/model/challenge/Challenge';
+import { Task } from '@/model/challenge/task/Task';
+import { Role } from '@/model/enumerated/Role';
 import { taskService } from '@/services/challenge/taskService';
+import { getDifficultyColor, getDifficultyText } from '@/utils/difficult';
+import { getTypeIcon } from '@/utils/icons';
 import { beautifyText, translateEcoCategory } from '@/utils/text-display';
+import { useRouter } from 'expo-router';
+import React from 'react';
+import { Alert, Text, View } from 'react-native';
+import { ThemedText } from '../../ThemedText';
+import { styles } from './TaskCard.styles';
 
 interface Props {
     task: Task;
@@ -29,17 +29,17 @@ export default function TaskCard({ task, challenge, onDeleteTask }: Props) {
 
     const handleDelete = () => {
         Alert.alert(
-            'Eliminar Actividad',
+            'Eliminar Tarea',
             `¿Estás seguro de que deseas eliminar "${beautifyText(task.title)}"?`,
             [
                 { text: 'Cancelar', style: 'cancel' },
                 {
                     text: 'Eliminar',
                     style: 'destructive',
-                    onPress: () => {
-                        taskService.deleteTask(task.id);
+                    onPress: async () => {
+                        await taskService.deleteTask(task.id);
                         onDeleteTask!();
-                        Alert.alert('Actividad eliminada', `"${beautifyText(task.title)}" ha sido eliminada`);
+                        Alert.alert('Tarea eliminada', `"${beautifyText(task.title)}" ha sido eliminada`);
                     }
                 }
             ]

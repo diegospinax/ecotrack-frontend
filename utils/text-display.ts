@@ -1,4 +1,5 @@
 import { EcoCategoryEnum } from "@/model/enumerated/EcoCategoryEnum";
+import { Role } from "@/model/enumerated/Role";
 
 export const capitalizeFirstLetter = (text: string): string => {
     text = text.toLowerCase();
@@ -29,4 +30,8 @@ export const translateEcoCategory = (category: EcoCategoryEnum): string => {
         case EcoCategoryEnum.WATER_CONSERVATION:
             return 'Conservación del agua'
     }
+}
+
+export const translateUserRole = (role: Role) => {
+    return role === 'ADMIN' ? 'Administrador' : 'Empleado';
 }

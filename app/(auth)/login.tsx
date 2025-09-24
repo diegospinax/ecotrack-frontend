@@ -49,7 +49,7 @@ export default function LoginScreen() {
           router.replace('/(app)/(tabs)');
         }, 1000);
       } else {
-        showError('Credenciales incorrectas. Verifica tu email y contraseña');
+        showError('Ups, problema con las credenciales.');
       }
     } catch (error) {
       console.log(error);
@@ -61,7 +61,7 @@ export default function LoginScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <WebContainer maxWidth={500} centered style={{paddingVertical: 40}}>
+      <WebContainer maxWidth={500} centered style={{ paddingVertical: 40 }}>
         <View style={styles.header}>
           <View style={[styles.iconContainer, { backgroundColor: useThemeColor({}, 'card') }]}>
             <Text style={styles.icon}>🌍</Text>
@@ -89,9 +89,9 @@ export default function LoginScreen() {
             autoCapitalize='none'
           />
 
-          <TouchableOpacity>
-            <Text style={[styles.forgotText, { color: useThemeColor({}, 'placeholder') }]}>¿Olvidaste tu contraseña?</Text>
-          </TouchableOpacity>
+          <Text style={[styles.forgotText, { color: useThemeColor({}, 'placeholder'), textAlign: 'center' }]}>
+            Deja un impacto positivo 🙂‍↕️
+          </Text>
 
           <Button
             label="Iniciar Sesión"
@@ -158,8 +158,7 @@ const styles = StyleSheet.create({
   },
   forgotText: {
     fontSize: 14,
-    textAlign: 'right',
-    marginTop: -8,
+    opacity: 0.70
   },
   loginButton: {
     marginTop: 8,

@@ -13,7 +13,7 @@ const priorities = ['Alta', 'Media', 'Baja'];
 const areas = ['Recursos Humanos', 'Tecnología', 'Marketing', 'Finanzas', 'Operaciones', 'Sostenibilidad'];
 const goalIcons = ['🎯', '💧', '⚡', '🚲', '♻️', '🌱', '📚', '💪', '🏆', '📊'];
 
-export default function GoalFormScreen() {
+export default function BadgeFormScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams();
   const isEditing = Boolean(id);

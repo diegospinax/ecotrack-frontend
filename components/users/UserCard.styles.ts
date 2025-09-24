@@ -24,7 +24,7 @@ export const styles = StyleSheet.create({
     avatarText: { fontSize: 20 },
     employeeInfo: { flex: 1, marginRight: 12 },
     employeeName: { fontSize: 16, fontWeight: '700', marginBottom: 4 },
-    employeePosition: { fontSize: 14, fontWeight: '500', marginBottom: 2 },
+    employeePosition: { fontSize: 14, fontWeight: '500' },
     employeeArea: { fontSize: 12, opacity: 0.7 },
     employeeStats: { alignItems: 'flex-end' },
     employeeXP: { fontSize: 14, fontWeight: '600', marginBottom: 8 },
@@ -42,4 +42,15 @@ export const styles = StyleSheet.create({
     },
     employeeEmail: { fontSize: 14, marginBottom: 4 },
     joinDate: { fontSize: 12, opacity: 0.6 },
+    button: {
+        flex: 1,
+        paddingVertical: 8,
+        borderRadius: 8,
+        alignItems: 'center',
+    },
+    buttonText: {
+        fontSize: 12,
+        fontWeight: '600',
+        color: '#f2f2f2',
+    },
 });

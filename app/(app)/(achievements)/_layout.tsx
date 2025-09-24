@@ -1,11 +1,9 @@
-import { View, Text } from 'react-native'
-import React from 'react'
 import { Stack } from 'expo-router'
+import React from 'react'
 
 export default function AchievementsLayout() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="add" />
       <Stack.Screen name="form" />
     </Stack>
   )

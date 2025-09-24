@@ -3,7 +3,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { WebContainer } from '@/components/WebContainer';
 import { useAuth } from '@/hooks/useAuth';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { capitalizeFirstLetter } from '@/utils/text-display';
+import { beautifyText, capitalizeFirstLetter } from '@/utils/text-display';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Dimensions, Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -45,7 +45,7 @@ export default function LessonsScreen() {
             />
             <View style={styles.userInfo}>
               <ThemedText style={styles.userName}>{capitalizeFirstLetter(user?.person.name!)}</ThemedText>
-              <ThemedText style={styles.userLevel}>Area: {capitalizeFirstLetter(user?.person.area!)}</ThemedText>
+              <ThemedText style={styles.userLevel}>Area: {beautifyText(user?.person.area!)}</ThemedText>
             </View>
           </View>
         </TouchableOpacity>

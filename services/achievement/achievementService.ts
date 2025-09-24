@@ -21,7 +21,7 @@ const findByBadgeId = async (taskId: number): Promise<Achievement[]> => {
     return response.data;
 }
 
-export const AchievementService = {
+export const achievementService = {
     createAchievement,
     findAll,
     findByPersonId,

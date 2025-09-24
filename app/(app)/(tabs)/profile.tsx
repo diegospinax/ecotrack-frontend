@@ -1,3 +1,4 @@
+import BadgeCard from '@/components/achievement/BadgeCard/BadgeCard';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import Button from '@/components/ui/Button';
@@ -5,26 +6,53 @@ import WebContainer from '@/components/WebContainer';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/hooks/useAuth';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { Link } from 'expo-router';
+import { Achievement } from '@/model/achievement/Achievement';
+import { Badge } from '@/model/achievement/badge/Badge';
+import { Challenge } from '@/model/challenge/Challenge';
+import { Course } from '@/model/course/Course';
+import { achievementService } from '@/services/achievement/achievementService';
+import { challengeService } from '@/services/challenge/challengeService';
+import { courseService } from '@/services/course/courseService';
+import { beautifyText } from '@/utils/text-display';
+import { Link, useFocusEffect } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, Platform, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
-
-const achievements = [
-  { id: 1, title: 'Primeros pasos', description: 'Completó tu primera lección', icon: '👶' },
-  { id: 2, title: 'Eco-explorador', description: 'Explora 5 lugares', icon: '🌱' },
-  { id: 3, title: 'Guardián del bosque', description: 'Planta 10 árboles', icon: '🌳' },
-  { id: 4, title: 'Reciclador estrella', description: 'Recicla 20 artículos', icon: '♻️' },
-];
+import { Alert, Image, Platform, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 
 export default function ProfileScreen() {
   const { user, logout } = useAuth();
+
   const { isDark, toggleTheme } = useTheme();
-  const [notifications, setNotifications] = useState(false);
+
   const cardBg = useThemeColor({}, 'card');
   const border = useThemeColor({}, 'border');
   const text = useThemeColor({}, 'text');
   const background = useThemeColor({}, 'background');
   const primary = useThemeColor({}, 'primary');
+
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [challenges, setChallenges] = useState<Challenge[]>([]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      findAchievements();
+      findChallenges();
+      findCourses();
+    }, [user])
+  );
+
+  const findAchievements = async () => {
+    const achievements: Achievement[] = await achievementService.findByPersonId(user?.person.id!);
+    setAchievements(achievements);
+  }
+  const findChallenges = async () => {
+    const challenges: Challenge[] = await challengeService.findByPersonId(user?.person.id!);
+    setChallenges(challenges);
+  }
+  const findCourses = async () => {
+    const courses: Course[] = await courseService.findByPersonId(user?.person.id!);
+    setCourses(courses);
+  }
 
   const handleLogout = async () => {
     Alert.alert(
@@ -50,7 +78,7 @@ export default function ProfileScreen() {
     <ThemedView style={styles.container} useSafeArea>
       <View style={styles.header}>
         <Text style={[styles.title, { color: useThemeColor({}, 'text') }]}>Perfil</Text>
-        <Link href="/settings" asChild>
+        <Link href="/(app)/(settings)" asChild>
           <TouchableOpacity>
             <Text style={styles.settingsIcon}>⚙️</Text>
           </TouchableOpacity>
@@ -60,27 +88,32 @@ export default function ProfileScreen() {
       <WebContainer scrollable maxWidth={800}>
         {/* Perfil del usuario */}
         <View style={[styles.profileCard, { backgroundColor: cardBg, borderColor: border }]}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>👩🏻</Text>
+          <Image source={{ uri: user?.person.profilePicture }} style={styles.avatar} />
+          <ThemedText style={[styles.userName, { color: text }]}>{beautifyText(user?.person.name)}</ThemedText>
+          <ThemedText style={styles.userLocation}>{beautifyText(user?.person.area)}</ThemedText>
+          <View style={{flexDirection:'row', gap: 10}}>
+            <ThemedText style={styles.userXP}>Tareas: {challenges.length || '0'}</ThemedText>
+            <ThemedText style={styles.userXP}>Lecciones: {courses.length || '0'}</ThemedText>
           </View>
-          <ThemedText style={styles.userName}>{user?.name || 'Usuario'}</ThemedText>
-          <ThemedText style={styles.userLocation}>Colombia</ThemedText>
-          <ThemedText style={styles.userXP}>{user?.xp?.toLocaleString() || '0'} XP</ThemedText>
         </View>
 
         {/* Logros */}
         <View style={styles.section}>
-          <ThemedText style={styles.sectionTitle}>Logros</ThemedText>
+          <ThemedText style={[styles.sectionTitle, { color: text }]}>Logros</ThemedText>
           <View style={styles.achievementsGrid}>
-            {achievements.map((achievement) => (
-              <View 
-                key={achievement.id}
-                style={[styles.achievementCard, { backgroundColor: cardBg, borderColor: border }]}
-              >
-                <Text style={styles.achievementIcon}>{achievement.icon}</Text>
-                <ThemedText style={styles.achievementTitle}>{achievement.title}</ThemedText>
-                <ThemedText style={styles.achievementDesc}>{achievement.description}</ThemedText>
+            {achievements.length === 0 && (
+              <View style={{ opacity: 0.6, flexDirection: 'column', alignContent: 'center', width: '100%' }}>
+                <Text style={[{ color: text, textAlign: 'center', fontSize: 18 }]}>
+                  Comienza con pequeñas acciones.
+                </Text>
+                <Text style={[{ color: text, textAlign: 'center', fontSize: 18 }]}>
+                  Verás aquí reflejados tus logros!
+                </Text>
               </View>
+            )}
+
+            {achievements.map((achievement) => (
+              <BadgeCard badge={achievement.badge} key={achievement.id} />
             ))}
           </View>
         </View>
@@ -88,12 +121,11 @@ export default function ProfileScreen() {
         {/* Ajustes */}
         <View style={styles.section}>
           <ThemedText style={styles.sectionTitle}>Ajustes</ThemedText>
-          
-          <TouchableOpacity 
+
+          <TouchableOpacity
             style={[
-              styles.settingCard, 
-              { backgroundColor: cardBg, borderColor: border },
-              Platform.OS === 'web' && styles.webHover
+              styles.settingCard,
+              { backgroundColor: cardBg, borderColor: border }
             ]}
             onPress={toggleTheme}
           >
@@ -103,22 +135,6 @@ export default function ProfileScreen() {
               onValueChange={toggleTheme}
               trackColor={{ false: border, true: primary }}
               thumbColor={isDark ? '#ffffff' : background}
-            />
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={[
-              styles.settingCard, 
-              { backgroundColor: cardBg, borderColor: border },
-              Platform.OS === 'web' && styles.webHover
-            ]}
-          >
-            <ThemedText style={styles.settingTitle}>Notificaciones</ThemedText>
-            <Switch
-              value={notifications}
-              onValueChange={setNotifications}
-              trackColor={{ false: border, true: primary }}
-              thumbColor={notifications ? '#ffffff' : background}
             />
           </TouchableOpacity>
 
@@ -174,9 +190,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
-  avatarText: {
-    fontSize: 32,
-  },
   userName: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -210,33 +223,6 @@ const styles = StyleSheet.create({
       justifyContent: 'space-between',
     }),
   },
-  achievementCard: {
-    width: '48%',
-    alignItems: 'center',
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    ...(Platform.OS === 'web' && {
-      minWidth: 180,
-      maxWidth: 220,
-      flex: 1,
-    }),
-  },
-  achievementIcon: {
-    fontSize: 24,
-    marginBottom: 8,
-  },
-  achievementTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    textAlign: 'center',
-    marginBottom: 4,
-  },
-  achievementDesc: {
-    fontSize: 12,
-    opacity: 0.8,
-    textAlign: 'center',
-  },
   settingCard: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -253,15 +239,7 @@ const styles = StyleSheet.create({
   logoutButton: {
     marginTop: 20,
     marginHorizontal: 20,
-  },
-  webHover: Platform.OS === 'web' ? {
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-  } : {},
-  webButton: Platform.OS === 'web' ? {
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-  } : {},
+  }
 });
 
 

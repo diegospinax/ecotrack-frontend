@@ -29,7 +29,7 @@ export default function ChallengesScreen() {
       } else if (user?.role === 'USER') {
         findChallenges();
       }
-    }, [user])
+    }, [user, tasks])
   );
 
   const findTasks = async () => {
