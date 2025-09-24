@@ -30,7 +30,7 @@ export default function TaskCard({ task, challenge, onDeleteTask }: Props) {
     const handleDelete = () => {
         Alert.alert(
             'Eliminar Actividad',
-            `¿Estás seguro de que deseas eliminar "${task.title}"?`,
+            `¿Estás seguro de que deseas eliminar "${beautifyText(task.title)}"?`,
             [
                 { text: 'Cancelar', style: 'cancel' },
                 {
@@ -39,7 +39,7 @@ export default function TaskCard({ task, challenge, onDeleteTask }: Props) {
                     onPress: () => {
                         taskService.deleteTask(task.id);
                         onDeleteTask!();
-                        Alert.alert('Actividad eliminada', `"${task.title}" ha sido eliminada`);
+                        Alert.alert('Actividad eliminada', `"${beautifyText(task.title)}" ha sido eliminada`);
                     }
                 }
             ]
@@ -47,7 +47,7 @@ export default function TaskCard({ task, challenge, onDeleteTask }: Props) {
     };
 
     const handleEdit = () => {
-        router.push(`/form?task=${JSON.stringify(task)}`);
+        router.push(`/(app)/(challenges)/form?task=${JSON.stringify(task)}`);
     }
 
     const handleUpdateChallenge = () => {

@@ -12,14 +12,12 @@ export default function SettingsScreen() {
   const router = useRouter();
   const { logout } = useAuth();
   const { toggleTheme, isDark } = useTheme();
-  const [notifications, setNotifications] = useState(false);
   const cardBg = useThemeColor({}, 'card');
   const border = useThemeColor({}, 'border');
   const text = useThemeColor({}, 'text');
   const background = useThemeColor({}, 'background');
   const primary = useThemeColor({}, 'primary');
   const { width } = Dimensions.get('window');
-  const isWeb = Platform.OS === 'web';
   const isTablet = width >= 768;
 
   const handleLogout = () => {
@@ -52,34 +50,15 @@ export default function SettingsScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <View style={[styles.header, isWeb && isTablet && styles.webHeader]}>
-        <TouchableOpacity onPress={() => router.back()} style={[isWeb && styles.webButton]}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()}>
           <Text style={[styles.backIcon, { color: text }]}>←</Text>
         </TouchableOpacity>
         <Text style={[styles.title, { color: text }]}>Configuración</Text>
         <View style={{ width: 24 }} />
       </View>
 
-      <WebContainer scrollable maxWidth={isTablet ? 800 : 600}>
-        {/* Notificaciones */}
-        <View style={styles.section}>
-          <ThemedText style={styles.sectionTitle}>Notificaciones</ThemedText>
-          <ThemedText style={styles.sectionDescription}>
-            Recibe recordatorios para tus actividades y actualizaciones importantes.
-          </ThemedText>
-          
-          <View style={[styles.settingCard, { backgroundColor: cardBg, borderColor: border }]}>
-            <View style={styles.settingContent}>
-              <ThemedText style={styles.settingTitle}>Notificaciones push</ThemedText>
-              <Switch
-                value={notifications}
-                onValueChange={setNotifications}
-                trackColor={{ false: border, true: primary }}
-                thumbColor={notifications ? '#ffffff' : background}
-              />
-            </View>
-          </View>
-        </View>
+      <WebContainer scrollable maxWidth={isTablet ? 800 : 600} style={{paddingVertical: 10}}>
 
         {/* Modo Oscuro */}
         <View style={styles.section}>
@@ -87,7 +66,7 @@ export default function SettingsScreen() {
           <ThemedText style={styles.sectionDescription}>
             Cambia la apariencia de la aplicación para una mejor experiencia visual.
           </ThemedText>
-          
+
           <View style={[styles.settingCard, { backgroundColor: cardBg, borderColor: border }]}>
             <View style={styles.settingContent}>
               <ThemedText style={styles.settingTitle}>Tema oscuro</ThemedText>
@@ -105,56 +84,40 @@ export default function SettingsScreen() {
         <View style={styles.section}>
           <ThemedText style={styles.sectionTitle}>Gestión Empresarial</ThemedText>
           <ThemedText style={styles.sectionDescription}>
-            Administra todos los aspectos de tu empresa y sostenibilidad.
+            Administra todos los aspectos de tu empresa y sus objetivos de impacto ambiental.
           </ThemedText>
-          
+
           <View style={styles.crudGrid}>
             <TouchableOpacity
               style={[styles.crudCard, { backgroundColor: cardBg, borderColor: border }]}
-              onPress={() => router.push('/employees')}
+              onPress={() => router.push('/(app)/(settings)/employees')}
             >
               <Text style={styles.crudIcon}>👥</Text>
               <ThemedText style={styles.crudTitle}>Empleados</ThemedText>
             </TouchableOpacity>
-            
-            <TouchableOpacity
-              style={[styles.crudCard, { backgroundColor: cardBg, borderColor: border }]}
-              onPress={() => router.push('/areas')}
-            >
-              <Text style={styles.crudIcon}>🏢</Text>
-              <ThemedText style={styles.crudTitle}>Áreas</ThemedText>
-            </TouchableOpacity>
-            
-            <TouchableOpacity
-              style={[styles.crudCard, { backgroundColor: cardBg, borderColor: border }]}
-              onPress={() => router.push('/companies')}
-            >
-              <Text style={styles.crudIcon}>🏭</Text>
-              <ThemedText style={styles.crudTitle}>Empresas</ThemedText>
-            </TouchableOpacity>
-            
+
             <TouchableOpacity
               style={[styles.crudCard, { backgroundColor: cardBg, borderColor: border }]}
               onPress={() => router.push('/challenges')}
             >
               <Text style={styles.crudIcon}>🌱</Text>
-              <ThemedText style={styles.crudTitle}>Actividades</ThemedText>
+              <ThemedText style={styles.crudTitle}>Tareas</ThemedText>
             </TouchableOpacity>
-            
+
             <TouchableOpacity
               style={[styles.crudCard, { backgroundColor: cardBg, borderColor: border }]}
-              onPress={() => router.push('/lessons-crud')}
+              onPress={() => router.push('/courses')}
             >
               <Text style={styles.crudIcon}>📚</Text>
               <ThemedText style={styles.crudTitle}>Lecciones</ThemedText>
             </TouchableOpacity>
-            
+
             <TouchableOpacity
               style={[styles.crudCard, { backgroundColor: cardBg, borderColor: border }]}
               onPress={() => router.push('/goals')}
             >
-              <Text style={styles.crudIcon}>🎯</Text>
-              <ThemedText style={styles.crudTitle}>Metas</ThemedText>
+              <Text style={styles.crudIcon}>🏆</Text>
+              <ThemedText style={styles.crudTitle}>Logros</ThemedText>
             </TouchableOpacity>
           </View>
         </View>
@@ -162,7 +125,7 @@ export default function SettingsScreen() {
         {/* Cerrar Sesión */}
         <View style={styles.section}>
           <TouchableOpacity
-            style={[styles.logoutCard, { backgroundColor: cardBg, borderColor: border }]}
+            style={[styles.logoutCard, { backgroundColor: cardBg, borderColor: border,  }]}
             onPress={handleLogout}
             activeOpacity={0.7}
           >
@@ -204,7 +167,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#1f2937',
     marginBottom: 8,
   },
   sectionDescription: {
@@ -242,45 +204,32 @@ const styles = StyleSheet.create({
   },
   logoutCard: {
     flexDirection: 'row',
-    alignItems: 'center',
+    textAlignVertical: 'center',
     justifyContent: 'space-between',
-    padding: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
     borderRadius: 12,
     borderWidth: 1,
-    ...(Platform.OS === 'web' && {
-      cursor: 'pointer' as any,
-      // transition handled by CSS
-    }),
   },
   logoutText: {
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '400',
   },
   logoutIcon: {
-    fontSize: 16,
+    fontSize: 16
   },
   crudGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 12,
-    marginTop: 16,
-    ...(Platform.OS === 'web' && {
-      justifyContent: 'center',
-    }),
+    marginTop: 16
   },
   crudCard: {
     width: '48%',
     alignItems: 'center',
     padding: 20,
     borderRadius: 16,
-    borderWidth: 1,
-    ...(Platform.OS === 'web' && {
-      minWidth: 160,
-      maxWidth: 220,
-      flex: 1,
-      cursor: 'pointer' as any,
-      // transition handled by CSS
-    }),
+    borderWidth: 1
   },
   crudIcon: {
     fontSize: 32,
@@ -291,13 +240,4 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
   },
-  webHeader: Platform.OS === 'web' ? {
-    maxWidth: 800,
-    alignSelf: 'center',
-    width: '100%',
-    paddingHorizontal: 40,
-  } : {},
-  webButton: Platform.OS === 'web' ? {
-    cursor: 'pointer' as any,
-  } : {},
 });

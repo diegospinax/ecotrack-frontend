@@ -5,6 +5,7 @@ export default function ChallengesLayout() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="add" />
+      <Stack.Screen name="form" />
     </Stack>
   );
 }

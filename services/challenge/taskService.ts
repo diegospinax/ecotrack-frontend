@@ -9,8 +9,6 @@ const findAll = async (): Promise<Task[]> => {
 }
 
 const updateTask = async (taskId: number, task: TaskRequest): Promise<void> => {
-    console.log(`Updating task with ID: ${taskId}`, task);
-    
     await apiClient.put(`/tasks/${taskId}`, task);
 }
 

@@ -69,8 +69,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <IconSymbol size={24} name="book.fill" color={color} />,
           tabBarLabelStyle: { 
             fontSize: isWeb && isTablet ? 14 : 12, 
-            fontWeight: '500',
-            ...(isWeb && { cursor: 'pointer' })
+            fontWeight: '500'
           },
         }}
       />
@@ -86,14 +85,13 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="ranking"
+        name="courses"
         options={{
-          title: 'Ranking',
-          tabBarIcon: ({ color }) => <IconSymbol size={24} name="rosette" color={color} />,
+          title: 'Cursos',
+          tabBarIcon: ({ color }) => <IconSymbol size={24} name="book" color={color} />,
           tabBarLabelStyle: { 
             fontSize: isWeb && isTablet ? 14 : 12, 
-            fontWeight: '500',
-            ...(isWeb && { cursor: 'pointer' })
+            fontWeight: '500'
           },
         }}
       />
@@ -104,8 +102,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <IconSymbol size={24} name="person.crop.circle" color={color} />,
           tabBarLabelStyle: { 
             fontSize: isWeb && isTablet ? 14 : 12, 
-            fontWeight: '500',
-            ...(isWeb && { cursor: 'pointer' })
+            fontWeight: '500'
           },
         }}
       />

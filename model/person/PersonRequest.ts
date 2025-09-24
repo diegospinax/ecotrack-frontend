@@ -7,6 +7,6 @@ export class PersonRequest {
         public readonly lastname: string,
         public readonly area: Area,
         public readonly profilePicture: string,
-        public readonly isActive: boolean
+        public readonly isActive?: boolean
     ) { }
 }

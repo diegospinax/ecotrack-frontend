@@ -53,7 +53,4 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
   },
   categoryFilterText: { fontSize: 14, fontWeight: '500' },
-
-
-  activityXP: { fontSize: 12, opacity: 0.7 },
 });
