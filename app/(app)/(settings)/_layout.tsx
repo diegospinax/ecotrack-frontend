@@ -5,7 +5,7 @@ export default function SettingsLayout() {
     return (
         <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="employees" />
-            <Stack.Screen name="goals" />
+            <Stack.Screen name="badges" />
         </Stack>
     )
 }

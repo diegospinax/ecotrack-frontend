@@ -4,80 +4,68 @@ import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import WebContainer from '@/components/WebContainer';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { Badge } from '@/model/achievement/badge/Badge';
+import { BadgeRequest } from '@/model/achievement/badge/BadgeRequest';
+import { EcoCategoryEnum } from '@/model/enumerated/EcoCategoryEnum';
+import { badgeService } from '@/services/achievement/badgeService';
+import { getTypeIcon } from '@/utils/icons';
+import { beautifyText, translateEcoCategory } from '@/utils/text-display';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Alert, Dimensions, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-
-const categories = ['Agua', 'Energía', 'Transporte', 'Residuos', 'Educación', 'Bienestar'];
-const priorities = ['Alta', 'Media', 'Baja'];
-const areas = ['Recursos Humanos', 'Tecnología', 'Marketing', 'Finanzas', 'Operaciones', 'Sostenibilidad'];
-const goalIcons = ['🎯', '💧', '⚡', '🚲', '♻️', '🌱', '📚', '💪', '🏆', '📊'];
+import { Alert, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function BadgeFormScreen() {
+
+  const params = useLocalSearchParams();
+
   const router = useRouter();
-  const { id } = useLocalSearchParams();
-  const isEditing = Boolean(id);
-  
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    category: '',
-    targetValue: '',
-    unit: '',
-    deadline: '',
-    priority: 'Media' as 'Alta' | 'Media' | 'Baja',
-    assignedTo: '',
-    icon: '🎯',
-  });
-  
+  const categories = Object.values(EcoCategoryEnum);
+
+  const isEditing = !!params.badge
+
+  const text = useThemeColor({}, 'text');
   const cardBg = useThemeColor({}, 'card');
   const border = useThemeColor({}, 'border');
-  const text = useThemeColor({}, 'text');
-  const { width } = Dimensions.get('window');
-  const isWeb = Platform.OS === 'web';
-  const isTablet = width >= 768;
+
+  const [badgeId, setBadgeId] = useState<number>();
+  const [name, setName] = useState<string>();
+  const [description, setDescription] = useState<string>();
+  const [type, setType] = useState<EcoCategoryEnum>();
 
   useEffect(() => {
-    if (isEditing) {
-      setFormData({
-        title: 'Reducir consumo de agua',
-        description: 'Disminuir el consumo de agua en la oficina en un 20%',
-        category: 'Agua',
-        targetValue: '20',
-        unit: '%',
-        deadline: '2024-06-30',
-        priority: 'Alta',
-        assignedTo: 'Área de Operaciones',
-        icon: '💧',
-      });
+    if (params.badge) {
+      const badgeData = JSON.parse(params.badge as string) as Badge;
+      setBadgeId(badgeData.id);
+      setName(badgeData.name);
+      setDescription(badgeData.description);
+      setType(badgeData.type);
     }
-  }, [isEditing]);
+  }, [params.badge]);
 
-  const handleSubmit = () => {
-    if (!formData.title || !formData.description || !formData.targetValue || !formData.assignedTo) {
+  const handleSubmit = async () => {
+    if (!name || !description || !type) {
       Alert.alert('Error', 'Por favor completa todos los campos obligatorios');
       return;
     }
 
+    const badgeRequest: BadgeRequest = {
+      name,
+      description,
+      type
+    }
+
+    if (isEditing) {
+      await badgeService.updateBadge(badgeId!, badgeRequest);
+    } else {
+      await badgeService.createBadge(badgeRequest);
+    }
+
     const action = isEditing ? 'actualizada' : 'creada';
     Alert.alert(
-      'Meta guardada',
-      `La meta "${formData.title}" ha sido ${action} exitosamente`,
+      'Medalla guardada',
+      `La medalla "${beautifyText(name)}" ha sido ${action} exitosamente`,
       [{ text: 'OK', onPress: () => router.back() }]
     );
-  };
-
-  const updateFormData = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'Alta': return '#ef4444';
-      case 'Media': return '#f59e0b';
-      case 'Baja': return '#4ade80';
-      default: return '#6b7280';
-    }
   };
 
   return (
@@ -92,18 +80,18 @@ export default function BadgeFormScreen() {
         <View style={{ width: 24 }} />
       </View>
 
-      <WebContainer scrollable maxWidth={isTablet ? 800 : 600}>
+      <WebContainer scrollable maxWidth={800}>
         {/* Información básica */}
         <View style={styles.section}>
           <ThemedText style={styles.sectionTitle}>Información básica</ThemedText>
-          
+
           <View style={styles.inputGroup}>
             <ThemedText style={styles.inputLabel}>Título de la meta *</ThemedText>
             <Input
               placeholder="Ej: Reducir consumo de agua"
-              value={formData.title}
-              onChangeText={(value) => updateFormData('title', value)}
-              style={styles.input}
+              value={beautifyText(name)}
+              onChangeText={setName}
+              style={[{color: text}]}
             />
           </View>
 
@@ -111,11 +99,11 @@ export default function BadgeFormScreen() {
             <ThemedText style={styles.inputLabel}>Descripción *</ThemedText>
             <Input
               placeholder="Describe el objetivo a alcanzar..."
-              value={formData.description}
-              onChangeText={(value) => updateFormData('description', value)}
+              value={beautifyText(description)}
+              onChangeText={setDescription}
               multiline
               numberOfLines={3}
-              style={[styles.input, { height: 80 }]}
+              style={[{ height: 80, color: text }]}
             />
           </View>
 
@@ -128,121 +116,19 @@ export default function BadgeFormScreen() {
                   style={[
                     styles.categoryOption,
                     { backgroundColor: cardBg, borderColor: border },
-                    formData.category === category && { borderColor: '#4ade80', borderWidth: 2 }
+                    type === category && { borderColor: '#4ade80', borderWidth: 2 }
                   ]}
-                  onPress={() => updateFormData('category', category)}
+                  onPress={() => setType(category)}
                 >
-                  <ThemedText style={styles.categoryOptionText}>{category}</ThemedText>
+                  <ThemedText style={styles.categoryOptionText}>
+                    {getTypeIcon(category)}  {translateEcoCategory(category)}
+                  </ThemedText>
                 </TouchableOpacity>
               ))}
             </View>
           </View>
         </View>
 
-        {/* Objetivo y medición */}
-        <View style={styles.section}>
-          <ThemedText style={styles.sectionTitle}>Objetivo y medición</ThemedText>
-          
-          <View style={styles.targetRow}>
-            <View style={styles.targetInput}>
-              <ThemedText style={styles.inputLabel}>Valor objetivo *</ThemedText>
-              <Input
-                placeholder="20"
-                value={formData.targetValue}
-                onChangeText={(value) => updateFormData('targetValue', value)}
-                keyboardType="numeric"
-                style={styles.input}
-              />
-            </View>
-            <View style={styles.unitInput}>
-              <ThemedText style={styles.inputLabel}>Unidad</ThemedText>
-              <Input
-                placeholder="%, kg, puntos"
-                value={formData.unit}
-                onChangeText={(value) => updateFormData('unit', value)}
-                style={styles.input}
-              />
-            </View>
-          </View>
-
-          <View style={styles.inputGroup}>
-            <ThemedText style={styles.inputLabel}>Fecha límite</ThemedText>
-            <Input
-              placeholder="2024-12-31"
-              value={formData.deadline}
-              onChangeText={(value) => updateFormData('deadline', value)}
-              style={styles.input}
-            />
-          </View>
-
-          <View style={styles.inputGroup}>
-            <ThemedText style={styles.inputLabel}>Prioridad</ThemedText>
-            <View style={styles.prioritiesRow}>
-              {priorities.map((priority) => (
-                <TouchableOpacity
-                  key={priority}
-                  style={[
-                    styles.priorityOption,
-                    { 
-                      backgroundColor: formData.priority === priority 
-                        ? getPriorityColor(priority) 
-                        : cardBg,
-                      borderColor: border
-                    }
-                  ]}
-                  onPress={() => updateFormData('priority', priority)}
-                >
-                  <Text style={[
-                    styles.priorityText,
-                    { 
-                      color: formData.priority === priority ? 'white' : text 
-                    }
-                  ]}>
-                    {priority}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-
-          <View style={styles.inputGroup}>
-            <ThemedText style={styles.inputLabel}>Asignado a *</ThemedText>
-            <View style={styles.areasGrid}>
-              {areas.map((area) => (
-                <TouchableOpacity
-                  key={area}
-                  style={[
-                    styles.areaOption,
-                    { backgroundColor: cardBg, borderColor: border },
-                    formData.assignedTo === area && { borderColor: '#4ade80', borderWidth: 2 }
-                  ]}
-                  onPress={() => updateFormData('assignedTo', area)}
-                >
-                  <ThemedText style={styles.areaOptionText}>{area}</ThemedText>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-
-          <View style={styles.inputGroup}>
-            <ThemedText style={styles.inputLabel}>Icono</ThemedText>
-            <View style={styles.iconsGrid}>
-              {goalIcons.map((icon) => (
-                <TouchableOpacity
-                  key={icon}
-                  style={[
-                    styles.iconOption,
-                    { backgroundColor: cardBg, borderColor: border },
-                    formData.icon === icon && { borderColor: '#4ade80', borderWidth: 2 }
-                  ]}
-                  onPress={() => updateFormData('icon', icon)}
-                >
-                  <Text style={styles.iconText}>{icon}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-        </View>
 
         {/* Vista previa */}
         <View style={styles.section}>
@@ -250,51 +136,32 @@ export default function BadgeFormScreen() {
           <View style={[styles.previewCard, { backgroundColor: cardBg, borderColor: border }]}>
             <View style={styles.previewHeader}>
               <View style={styles.previewIcon}>
-                <Text style={styles.previewIconText}>{formData.icon}</Text>
+                <Text style={styles.previewIconText}>{getTypeIcon(type!)}</Text>
               </View>
               <View style={styles.previewInfo}>
                 <ThemedText style={styles.previewTitle}>
-                  {formData.title || 'Título de la meta'}
+                  {beautifyText(name) || 'Título de la medalla'}
                 </ThemedText>
-                <ThemedText style={styles.previewAssigned}>
-                  {formData.assignedTo || 'Área asignada'}
-                </ThemedText>
-                <View style={styles.previewMeta}>
-                  <Text style={[
-                    styles.previewPriority,
-                    { backgroundColor: getPriorityColor(formData.priority) }
-                  ]}>
-                    {formData.priority}
-                  </Text>
-                  <ThemedText style={styles.previewTarget}>
-                    Meta: {formData.targetValue || '0'} {formData.unit || 'unidad'}
-                  </ThemedText>
-                </View>
               </View>
             </View>
             <ThemedText style={styles.previewDescription}>
-              {formData.description || 'Descripción de la meta...'}
+              {beautifyText(description) || 'Descripción de la meta...'}
             </ThemedText>
-            {formData.deadline && (
-              <ThemedText style={styles.previewDeadline}>
-                📅 Fecha límite: {new Date(formData.deadline).toLocaleDateString('es-ES')}
-              </ThemedText>
-            )}
           </View>
         </View>
         {/* Botones */}
         <View style={styles.buttonsContainer}>
-        <Button
-          label={isEditing ? 'Actualizar meta' : 'Crear meta'}
-          onPress={handleSubmit}
-          style={styles.submitButton}
-        />
-        <Button
-          label="Cancelar"
-          variant="secondary"
-          onPress={() => router.back()}
-          style={styles.cancelButton}
-        />
+          <Button
+            label={isEditing ? 'Actualizar meta' : 'Crear meta'}
+            onPress={handleSubmit}
+            style={styles.submitButton}
+          />
+          <Button
+            label="Cancelar"
+            variant="secondary"
+            onPress={() => router.back()}
+            style={styles.cancelButton}
+          />
         </View>
       </WebContainer>
     </ThemedView>
@@ -314,27 +181,19 @@ const styles = StyleSheet.create({
   backIcon: { fontSize: 24 },
   title: { fontSize: 20, fontWeight: '700' },
   content: { flex: 1 },
-  section: { 
-    paddingHorizontal: 24, 
-    marginBottom: 32,
-    ...(Platform.OS === 'web' && {
-      paddingHorizontal: 0,
-    }),
+  section: {
+    paddingHorizontal: 24,
+    marginBottom: 32
   },
   sectionTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 16 },
   inputGroup: { marginBottom: 16 },
   inputLabel: { fontSize: 16, fontWeight: '600', marginBottom: 8 },
-  input: { marginBottom: 4 },
   targetRow: { flexDirection: 'row', gap: 12 },
   targetInput: { flex: 2 },
   unitInput: { flex: 1 },
-  categoriesGrid: { 
-    flexDirection: 'row', 
-    flexWrap: 'wrap', 
-    gap: 8,
-    ...(Platform.OS === 'web' && {
-      justifyContent: 'center',
-    }),
+  categoriesGrid: {
+    flexDirection: 'column',
+    gap: 12
   },
   categoryOption: {
     paddingHorizontal: 16,
@@ -345,8 +204,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   categoryOptionText: { fontSize: 14, fontWeight: '500' },
-  prioritiesRow: { 
-    flexDirection: 'row', 
+  prioritiesRow: {
+    flexDirection: 'row',
     gap: 12,
     ...(Platform.OS === 'web' && {
       justifyContent: 'center',
@@ -360,9 +219,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   priorityText: { fontSize: 14, fontWeight: '600' },
-  areasGrid: { 
-    flexDirection: 'row', 
-    flexWrap: 'wrap', 
+  areasGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 8,
     ...(Platform.OS === 'web' && {
       justifyContent: 'center',
@@ -377,9 +236,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   areaOptionText: { fontSize: 14, fontWeight: '500' },
-  iconsGrid: { 
-    flexDirection: 'row', 
-    flexWrap: 'wrap', 
+  iconsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 12,
     ...(Platform.OS === 'web' && {
       justifyContent: 'center',

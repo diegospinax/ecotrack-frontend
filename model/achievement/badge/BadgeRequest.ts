@@ -5,6 +5,6 @@ export class BadgeRequest {
         public readonly name: string,
         public readonly description: string,
         public readonly type: EcoCategoryEnum,
-        public readonly isActive: boolean
+        public readonly isActive?: boolean
     ) { }
 }

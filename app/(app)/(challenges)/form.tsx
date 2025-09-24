@@ -19,8 +19,8 @@ import { Alert, Text, TouchableOpacity, View } from 'react-native';
 export default function TaskFormScreen() {
   const params = useLocalSearchParams();
 
-  const router = useRouter();
-  const categories = Object.values(EcoCategoryEnum);
+    const router = useRouter();
+    const categories = Object.values(EcoCategoryEnum);
 
   const [title, setTitle] = useState<string | undefined>();
   const [description, setDescription] = useState<string | undefined>();
